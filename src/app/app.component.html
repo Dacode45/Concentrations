@@ -1,20 +1,76 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<p>Instructions: Set the End Volume and add solutions. Fix errors. To recalculate set the value of a field to 0</p>
 
+
+<label>
+  Set End Volume
+  <input type="number" class="form-control" [(ngModel)]="end_volume" (change)="refresh()">
+</label>
+
+<form>
+  <div class="form-group">
+    <label>New Solution
+      <input #new_sol class="form-control" placeholder="New Solution">
+    </label>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="addSolution(new_sol.value)">Add</button>
+</form>
+
+<p class="text-danger" [hidden]="errorText === ''">
+  {{errorText}}
+  Problem rows highlighted in red
+</p>
+
+<table class="table table-hover" cdk-table [dataSource]="solutions$">
+  <ng-container cdkColumnDef="name">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution Name</th>
+    <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+      'table-danger': isBadSolution(row.name) 
+    }">{{row.name}}<button
+        type="button" class="btn btn-primary" (click)="removeSolution(row.name)">Remove</button></td>
+  </ng-container>
+
+  <ng-container cdkColumnDef="start_conc">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution start_conc</th>
+    <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+      'table-success': row.solved_for === 'start_conc'
+    }">
+      <input type="number" class="form-control" [(ngModel)]="row.start_conc" (change)="refresh()">
+    </td>
+  </ng-container>
+
+  <ng-container cdkColumnDef="end_conc">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution end_conc</th>
+    <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+      'table-success': row.solved_for === 'end_conc'
+    }"> <input
+        type="number" class="form-control" [(ngModel)]="row.end_conc" (change)="refresh()">
+    </td>
+  </ng-container>
+
+  <ng-container cdkColumnDef="start_volume">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution start_volume</th>
+    <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+        'table-success': row.solved_for === 'start_volume'
+      }">
+      <input type="number" class="form-control" [(ngModel)]="row.start_volume" (change)="refresh()">
+    </td>
+  </ng-container>
+
+  <ng-container cdkColumnDef="end_volume">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution end_volume</th>
+    <td cdk-cell *cdkCellDef="let row" [ngClass]="{
+      'table-success': row.solved_for === 'end_volume'
+    }">
+      <input type="number" class="form-control" [(ngModel)]="row.end_volume" (change)="refresh()">
+    </td>
+  </ng-container>
+
+  <ng-container cdkColumnDef="solved_for">
+    <th cdk-header-cell *cdkHeaderCellDef>Solution solved_for</th>
+    <td cdk-cell *cdkCellDef="let row">{{row.solved_for}}</td>
+  </ng-container>
+
+  <tr cdk-header-row *cdkHeaderRowDef="displayed_columns_source.value"></tr>
+  <tr cdk-row *cdkRowDef="let row; columns: displayed_columns_source.value"></tr>
+</table>
